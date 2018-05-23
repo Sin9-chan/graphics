@@ -9,13 +9,17 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
 
-namespace Graphics
+namespace Graphics_test
 {
     public partial class Form1 : Form
     {
         string[] ports;
         string portname = "";
         SerialPort sp = null;
+        public static int[] indata = null;
+        public static bool stop = false;
+        public Bitmap myBitmap;
+        public Graphics graphicsObj;
 
         public Form1()
         {
@@ -28,13 +32,33 @@ namespace Graphics
             int length = sp1.BytesToRead;
             byte[] buf = new byte[length];
             sp1.Read(buf, 0, length);
-            string indata = Encoding.Default.GetString(buf, 0, buf.Length);
+            indata = new int[length];
+            for (int i=0; i < length; i++)
+            {
+                indata[i] = (int)buf[i];
+            }
         }
         private void button1_Click(object sender, EventArgs e)
         {
+            int x = 0, y = 0;
+            button1.Enabled = false;
             if (sp.IsOpen)
             {
-                sp.Write("1");
+                do
+                {
+                    sp.Write("1");
+                    if (!(indata == null) || (indata.Length == 0))
+                    {
+                        for (int i = 0; i < indata.Length; i++)
+                        {
+                            myBitmap.SetPixel(x, y, Color.FromArgb(255, indata[i], indata[i], indata[i]));
+                            y++;
+                        }
+                        x++;
+                    }
+
+                }
+                while (!stop);
             }
         }
 
@@ -57,6 +81,12 @@ namespace Graphics
                 textBox1.Enabled = false;
                 textBox2.Enabled = false;
             }
+            myBitmap = new Bitmap(panel1.Width, panel1.Height);
+            graphicsObj = Graphics.FromImage(myBitmap);
+            Pen myPen = new Pen(Color.White, 3);
+            Rectangle rectangleObj = new Rectangle(panel1.Location, new Size(100,100));
+            graphicsObj.DrawEllipse(myPen, rectangleObj);
+            graphicsObj.Dispose();
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -115,6 +145,13 @@ namespace Graphics
                 textBox1.Enabled = false;
                 textBox2.Enabled = false;
             }
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            Graphics graphics = e.Graphics;
+            graphics.DrawImage(myBitmap, 0, 0, myBitmap.Width, myBitmap.Height);
+            graphics.Dispose();
         }
     }
 }

@@ -1,0 +1,10 @@
+E:\Docs\Graphics\Graphics\bin\Debug\Graphics_test.exe.config
+E:\Docs\Graphics\Graphics\bin\Debug\Graphics_test.exe
+E:\Docs\Graphics\Graphics\bin\Debug\Graphics_test.pdb
+E:\Docs\Graphics\Graphics\obj\Debug\Graphics_test.csprojResolveAssemblyReference.cache
+E:\Docs\Graphics\Graphics\obj\Debug\Graphics_test.Form1.resources
+E:\Docs\Graphics\Graphics\obj\Debug\Graphics_test.Properties.Resources.resources
+E:\Docs\Graphics\Graphics\obj\Debug\Graphics_test.csproj.GenerateResource.Cache
+E:\Docs\Graphics\Graphics\obj\Debug\Graphics_test.csproj.CoreCompileInputs.cache
+E:\Docs\Graphics\Graphics\obj\Debug\Graphics_test.exe
+E:\Docs\Graphics\Graphics\obj\Debug\Graphics_test.pdb
