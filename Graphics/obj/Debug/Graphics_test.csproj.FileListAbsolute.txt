@@ -8,3 +8,13 @@ E:\Docs\Graphics\Graphics\obj\Debug\Graphics_test.csproj.GenerateResource.Cache
 E:\Docs\Graphics\Graphics\obj\Debug\Graphics_test.csproj.CoreCompileInputs.cache
 E:\Docs\Graphics\Graphics\obj\Debug\Graphics_test.exe
 E:\Docs\Graphics\Graphics\obj\Debug\Graphics_test.pdb
+D:\Projects\graphics\graphics\Graphics\bin\Debug\Graphics_test.exe.config
+D:\Projects\graphics\graphics\Graphics\bin\Debug\Graphics_test.exe
+D:\Projects\graphics\graphics\Graphics\bin\Debug\Graphics_test.pdb
+D:\Projects\graphics\graphics\Graphics\obj\Debug\Graphics_test.csprojResolveAssemblyReference.cache
+D:\Projects\graphics\graphics\Graphics\obj\Debug\Graphics_test.Form1.resources
+D:\Projects\graphics\graphics\Graphics\obj\Debug\Graphics_test.Properties.Resources.resources
+D:\Projects\graphics\graphics\Graphics\obj\Debug\Graphics_test.csproj.GenerateResource.Cache
+D:\Projects\graphics\graphics\Graphics\obj\Debug\Graphics_test.csproj.CoreCompileInputs.cache
+D:\Projects\graphics\graphics\Graphics\obj\Debug\Graphics_test.exe
+D:\Projects\graphics\graphics\Graphics\obj\Debug\Graphics_test.pdb
