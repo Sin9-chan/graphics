@@ -19,9 +19,10 @@ namespace Graphics_test
         SerialPort sp = null;
         public static int[] indata = null;
         public static bool stop = false;
-        public Bitmap myBitmap;
-        public Graphics graphicsObj;
-        public int delay = 0;
+        public Bitmap myBitmap = null;
+        public Graphics graphicsObj = null;
+        public int length = 128;
+        public int[][] bmp = null;
 
         public Form1()
         {
@@ -31,18 +32,18 @@ namespace Graphics_test
         private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
             SerialPort sp1 = (SerialPort)sender;
-            int length = sp1.BytesToRead;
+            length = sp1.BytesToRead;
             byte[] buf = new byte[length];
             sp1.Read(buf, 0, length);
             indata = new int[length];
             for (int i = 0; i < length; i++)
             {
-                indata[i] = (int)buf[i];
+                indata[i] = (int)buf[i]/16;
             }
         }
         private void TestDraw(int[] b, int x)
         {
-            int y = panel1.Location.Y;
+            int y = 0;
             for (int i = 0; i < b.Length; i++)
             {
                 if (!(b[i] <= -1))
@@ -53,7 +54,6 @@ namespace Graphics_test
         }
         private void button1_Click(object sender, EventArgs e)
         {
-            int x = panel1.Location.X, y = panel1.Location.Y;
             button1.Enabled = false;
             button3.Enabled = false;
             button4.Enabled = false;
@@ -63,26 +63,31 @@ namespace Graphics_test
             textBox1.Enabled = false;
             textBox2.Enabled = false;
             button2.Enabled = true;
+            textBox3.Enabled = false;
+            button8.Enabled = false;
             try
             {
-                if (sp.IsOpen)
+                bmp = new int[panel1.Width][];
+                for (int i = 0; i < panel1.Width; i++)
+                {
+                    bmp[i] = new int[length];
+                    for (int j = 0; j < length; j++)
+                    {
+                        bmp[i][j] = -1;
+                    }
+                }
+                myBitmap = new Bitmap(panel1.Width, panel1.Height);
+                graphicsObj = Graphics.FromImage(myBitmap);
+                timer1.Enabled = true;
+                /*if (sp.IsOpen)
                 {
                     do
                     {
                         sp.Write("MEAS\r");
-                        if (!((indata == null) || (indata.Length == 0)))
-                        {
-                            for (int i = 0; i < indata.Length; i++)
-                            {
-                                myBitmap.SetPixel(x, y, Color.FromArgb(255, indata[i], indata[i], indata[i]));
-                                y++;
-                            }
-                            x++;
-                        }
-
+                        Thread.Sleep(timer1.Interval);
                     }
                     while (!stop);
-                }
+                }*/
             }
             catch(Exception ex)
             {
@@ -110,55 +115,16 @@ namespace Graphics_test
                 button7.Enabled = false;
                 textBox1.Enabled = false;
                 textBox2.Enabled = false;
+                textBox3.Enabled = false;
+                button8.Enabled = false;
             }
-            button2.Enabled = true;
-            Random r = new Random();
-            int[][] bmp = new int[panel1.Width][];
-            for (int i = 0; i < panel1.Width; i++)
-            {
-                bmp[i] = new int[128];
-                for (int j = 0; j < 128; j++)
-                {
-                    bmp[i][j] = -1;
-                }
-            }
-            int asd = 0;
-            myBitmap = new Bitmap(panel1.Width, panel1.Height);
-            graphicsObj = Graphics.FromImage(myBitmap);
-            while (!stop)
-            {
-                int[] mass = new int[128];
-                string str = "";
-                int[][] demo = new int[bmp.Length][];
-                for (int i = 0; i < 128; i++)
-                {
-                    mass[i] = asd;// r.Next(255);
-                }
-
-                Array.Copy(bmp, 0, demo, 1, bmp.Length - 1);
-                demo[0] = mass;
-                bmp = demo;
-                for (int i = 0; i < 10; i++)
-                {
-                    for (int j = 0; j < bmp[i].Length; j++)
-                    {
-                        str += bmp[i][j].ToString()+" ";
-                    }
-                    str += "\n";
-                }
-                Thread.Sleep(delay);
-                for (int a = 0; a < 10; a++)
-                {
-                    TestDraw(bmp[a], a + panel1.Location.X);
-                    Invalidate();
-                }
-                asd++;
-                /* graphicsObj = this.CreateGraphics();
-                Brush brush = new SolidBrush(Color.FromArgb(255,r.Next(255), r.Next(255), r.Next(255)));
-                graphicsObj.FillRectangle(brush, r.Next(panel1.Location.X+anel), y, 1, 1);*/
-                //MessageBox.Show(str);
-            }
-            graphicsObj.Dispose();
+            button1.Enabled = true;
+            this.SetStyle(
+                ControlStyles.AllPaintingInWmPaint |
+                ControlStyles.UserPaint |
+                ControlStyles.DoubleBuffer,
+                true);
+            this.UpdateStyles();
         }
 
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
@@ -182,6 +148,8 @@ namespace Graphics_test
                 button5.Enabled = false;
                 button6.Enabled = true;
                 button7.Enabled = true;
+                textBox3.Enabled = true;
+                button8.Enabled = true;
             }
             catch
             {
@@ -195,6 +163,8 @@ namespace Graphics_test
                 button6.Enabled = false;
                 button7.Enabled = false;
                 button5.Enabled = true;
+                textBox3.Enabled = false;
+                button8.Enabled = false;
                 if (!(sp == null))
                 {
                     if (sp.IsOpen) sp.Close();
@@ -224,19 +194,16 @@ namespace Graphics_test
                 textBox2.Enabled = false;
                 button6.Enabled = false;
                 button7.Enabled = false;
+                textBox3.Enabled = false;
+                button8.Enabled = false;
             }
         }
-
-        private void Form1_Paint(object sender, PaintEventArgs e)
-        {
-            Graphics graphics = e.Graphics;
-            graphics.DrawImage(myBitmap, 0, 0, myBitmap.Width, myBitmap.Height);
-            graphics.Dispose();
-        }
+        
 
         private void button2_Click(object sender, EventArgs e)
         {
             stop = true;
+            timer1.Enabled = false;
             button1.Enabled = true;
             button3.Enabled = false;
             button4.Enabled = true;
@@ -246,6 +213,10 @@ namespace Graphics_test
             textBox1.Enabled = true;
             textBox2.Enabled = true;
             button2.Enabled = false;
+            textBox3.Enabled = true;
+            button8.Enabled = true;
+            //myBitmap.Dispose();
+            //graphicsObj.Dispose();
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -265,6 +236,8 @@ namespace Graphics_test
             textBox2.Enabled = false;
             button6.Enabled = false;
             button7.Enabled = false;
+            textBox3.Enabled = false;
+            button8.Enabled = false;
         }
 
         private void button6_Click(object sender, EventArgs e)
@@ -327,16 +300,47 @@ namespace Graphics_test
                         g = Convert.ToInt32(textBox1.Text);
                     }
                     catch { }
-                    if (!((g == -1) || (g > 1000 || g < 0)))
+                    if (!((g == -1) || (g > 1000 || g < 10)))
                     {
-                        delay = g;
+                        timer1.Interval = g;
                     }
-                    else { MessageBox.Show("Expects decimal number from 0 to 1000."); }
+                    else { MessageBox.Show("Expects decimal number from 10 to 1000."); }
                 
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message);
+            }
+        }
+
+        private void timer1_Tick(object sender, EventArgs e)
+        {
+            Random r = new Random();
+            indata = new int[bmp[0].Length];
+            for (int i = 0; i < length; i++)
+            {
+                indata[i] = r.Next(255);
+            }
+
+            int[][] demo = new int[bmp.Length][];
+            if (!((indata == null) || (indata.Length == 0) || indata.SequenceEqual(bmp[0])))
+            {
+                Array.Copy(bmp, 0, demo, 1, bmp.Length - 1);
+                demo[0] = indata;
+                bmp = demo;
+            }
+            this.Invalidate();
+        }
+
+        private void Form1_Paint(object sender, PaintEventArgs e)
+        {
+            if (!((bmp == null) || (myBitmap == null)))
+            {
+                for (int a = 0; a < panel1.Width; a++)
+                {
+                    TestDraw(bmp[a], a);
+                }
+                e.Graphics.DrawImage(myBitmap, panel1.Location.X, panel1.Location.Y, myBitmap.Width, myBitmap.Height);
             }
         }
     }
