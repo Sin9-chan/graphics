@@ -9,6 +9,9 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.IO.Ports;
 using System.Threading;
+using System.Diagnostics;
+using System.Drawing.Drawing2D;
+using System.Drawing.Imaging;
 
 namespace Graphics_test
 {
@@ -23,6 +26,7 @@ namespace Graphics_test
         public Graphics graphicsObj = null;
         public int length = 128;
         public int[][] bmp = null;
+        public int width, height;
 
         public Form1()
         {
@@ -41,15 +45,19 @@ namespace Graphics_test
                 indata[i] = (int)buf[i]/16;
             }
         }
-        private void TestDraw(int[] b, int x)
+        private void TestDraw(int[][] b)
         {
-            int y = 0;
+            int x = 0, y = 0;
             for (int i = 0; i < b.Length; i++)
             {
-                if (!(b[i] <= -1))
-                    myBitmap.SetPixel(x, y + i, Color.FromArgb(255, b[i], b[i], b[i]));
-                else
-                    myBitmap.SetPixel(x, y + i, Color.FromArgb(0, 0, 0, 0));
+                for (int j = 0; j < b[i].Length; j++)
+                {
+
+                    if (!(b[i][j] <= -1))
+                        myBitmap.SetPixel(x + i, y + j, Color.FromArgb(255, b[i][j], b[i][j], b[i][j]));
+                    else
+                        myBitmap.SetPixel(x + i, y + j, Color.FromArgb(0, 0, 0, 0));
+                }
             }
         }
         private void button1_Click(object sender, EventArgs e)
@@ -67,8 +75,8 @@ namespace Graphics_test
             button8.Enabled = false;
             try
             {
-                bmp = new int[panel1.Width][];
-                for (int i = 0; i < panel1.Width; i++)
+                bmp = new int[width][];
+                for (int i = 0; i < width; i++)
                 {
                     bmp[i] = new int[length];
                     for (int j = 0; j < length; j++)
@@ -76,7 +84,7 @@ namespace Graphics_test
                         bmp[i][j] = -1;
                     }
                 }
-                myBitmap = new Bitmap(panel1.Width, panel1.Height);
+                myBitmap = new Bitmap(width, height);
                 graphicsObj = Graphics.FromImage(myBitmap);
                 timer1.Enabled = true;
                 /*if (sp.IsOpen)
@@ -119,14 +127,37 @@ namespace Graphics_test
                 button8.Enabled = false;
             }
             button1.Enabled = true;
-            this.SetStyle(
-                ControlStyles.AllPaintingInWmPaint |
-                ControlStyles.UserPaint |
-                ControlStyles.DoubleBuffer,
-                true);
-            this.UpdateStyles();
+            width = 300;
+            height = panel1.Height;
         }
+        private void ProcessUsingLockbitsAndUnsafeAndParallel(Bitmap processedBitmap)
+        {
+            unsafe
+            {
+                BitmapData bitmapData = processedBitmap.LockBits(new Rectangle(0, 0, processedBitmap.Width, processedBitmap.Height), ImageLockMode.ReadWrite, processedBitmap.PixelFormat);
 
+                int bytesPerPixel = Bitmap.GetPixelFormatSize(processedBitmap.PixelFormat) / 8;
+                int heightInPixels = bitmapData.Height;
+                int widthInBytes = bitmapData.Width * bytesPerPixel;
+                byte* PtrFirstPixel = (byte*)bitmapData.Scan0;
+
+                Parallel.For(0, heightInPixels, y =>
+                {
+                    byte* currentLine = PtrFirstPixel + (y * bitmapData.Stride);
+                    for (int x = 0; x < widthInBytes; x = x + bytesPerPixel)
+                    {
+                        int oldBlue = currentLine[x];
+                        int oldGreen = currentLine[x + 1];
+                        int oldRed = currentLine[x + 2];
+
+                        currentLine[x] = (byte)oldBlue;
+                        currentLine[x + 1] = (byte)oldGreen;
+                        currentLine[x + 2] = (byte)oldRed;
+                    }
+                });
+                processedBitmap.UnlockBits(bitmapData);
+            }
+        }
         private void comboBox1_SelectedIndexChanged(object sender, EventArgs e)
         {
             portname = comboBox1.SelectedItem.ToString();
@@ -215,8 +246,6 @@ namespace Graphics_test
             button2.Enabled = false;
             textBox3.Enabled = true;
             button8.Enabled = true;
-            //myBitmap.Dispose();
-            //graphicsObj.Dispose();
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -323,7 +352,7 @@ namespace Graphics_test
             }
 
             int[][] demo = new int[bmp.Length][];
-            if (!((indata == null) || (indata.Length == 0) || indata.SequenceEqual(bmp[0])))
+            if (!((indata == null) || (indata.Length == 0)))
             {
                 Array.Copy(bmp, 0, demo, 1, bmp.Length - 1);
                 demo[0] = indata;
@@ -334,13 +363,20 @@ namespace Graphics_test
 
         private void Form1_Paint(object sender, PaintEventArgs e)
         {
-            if (!((bmp == null) || (myBitmap == null)))
+            
+            if (!((bmp == null) || (myBitmap == null) || stop))
             {
-                for (int a = 0; a < panel1.Width; a++)
-                {
-                    TestDraw(bmp[a], a);
-                }
-                e.Graphics.DrawImage(myBitmap, panel1.Location.X, panel1.Location.Y, myBitmap.Width, myBitmap.Height);
+                //Stopwatch sw = new Stopwatch();
+                //sw.Start();
+                e.Graphics.CompositingMode = CompositingMode.SourceOver;
+                e.Graphics.PixelOffsetMode = PixelOffsetMode.HighSpeed;
+                e.Graphics.CompositingQuality = CompositingQuality.HighSpeed;
+                e.Graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
+                e.Graphics.SmoothingMode = SmoothingMode.None;
+                TestDraw(bmp);
+                e.Graphics.DrawImage(myBitmap, panel1.Location.X, panel1.Location.Y, width, height);
+                //sw.Stop();
+                //MessageBox.Show(sw.Elapsed.TotalMilliseconds.ToString());
             }
         }
     }
