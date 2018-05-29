@@ -20,12 +20,12 @@ namespace Graphics_test
         string[] ports;
         string portname = "";
         SerialPort sp = null;
-        public static int[] indata = null;
-        public static bool stop = false;
+        public volatile int[] indata = null;
+        public volatile bool stop = false;
         public Bitmap myBitmap = null;
         public Graphics graphicsObj = null;
         public int length = 128;
-        public int[][] bmp = null;
+        public volatile int[][] bmp = null;
         public int width, height;
 
         public Form1()
@@ -62,6 +62,7 @@ namespace Graphics_test
         }
         private void button1_Click(object sender, EventArgs e)
         {
+            stop = false;
             button1.Enabled = false;
             button3.Enabled = false;
             button4.Enabled = false;
@@ -84,9 +85,10 @@ namespace Graphics_test
                         bmp[i][j] = -1;
                     }
                 }
-                myBitmap = new Bitmap(width, height);
+                myBitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
                 graphicsObj = Graphics.FromImage(myBitmap);
                 timer1.Enabled = true;
+                timer1.Start();
                 /*if (sp.IsOpen)
                 {
                     do
@@ -127,34 +129,37 @@ namespace Graphics_test
                 button8.Enabled = false;
             }
             button1.Enabled = true;
-            width = 300;
-            height = panel1.Height;
+            width = panel1.Width;
+            height = length;
+            this.SetStyle(ControlStyles.DoubleBuffer |
+              ControlStyles.UserPaint |
+              ControlStyles.AllPaintingInWmPaint,
+              true);
+            this.UpdateStyles();
         }
-        private void ProcessUsingLockbitsAndUnsafeAndParallel(Bitmap processedBitmap)
+        private void ProcessUsingLockbitsAndUnsafe(Bitmap processedBitmap)
         {
             unsafe
             {
                 BitmapData bitmapData = processedBitmap.LockBits(new Rectangle(0, 0, processedBitmap.Width, processedBitmap.Height), ImageLockMode.ReadWrite, processedBitmap.PixelFormat);
-
                 int bytesPerPixel = Bitmap.GetPixelFormatSize(processedBitmap.PixelFormat) / 8;
                 int heightInPixels = bitmapData.Height;
                 int widthInBytes = bitmapData.Width * bytesPerPixel;
-                byte* PtrFirstPixel = (byte*)bitmapData.Scan0;
+                byte* ptrFirstPixel = (byte*)bitmapData.Scan0;
 
-                Parallel.For(0, heightInPixels, y =>
+                for (int y = 0; y < heightInPixels; y++)
                 {
-                    byte* currentLine = PtrFirstPixel + (y * bitmapData.Stride);
+                    byte* currentLine = ptrFirstPixel + (y * bitmapData.Stride);
                     for (int x = 0; x < widthInBytes; x = x + bytesPerPixel)
                     {
-                        int oldBlue = currentLine[x];
-                        int oldGreen = currentLine[x + 1];
-                        int oldRed = currentLine[x + 2];
-
-                        currentLine[x] = (byte)oldBlue;
-                        currentLine[x + 1] = (byte)oldGreen;
-                        currentLine[x + 2] = (byte)oldRed;
+                        int alpha = bmp[x/4][y] == -1 ? 0 : 255;
+                        int color = bmp[x/4][y] == -1 ? 0 : bmp[x/4][y];
+                        currentLine[x] = (byte)color; //blue
+                        currentLine[x + 1] = (byte)color; //green
+                        currentLine[x + 2] = (byte)color; //red
+                        currentLine[x + 3] = (byte)alpha; //alpha
                     }
-                });
+                }
                 processedBitmap.UnlockBits(bitmapData);
             }
         }
@@ -234,6 +239,7 @@ namespace Graphics_test
         private void button2_Click(object sender, EventArgs e)
         {
             stop = true;
+            timer1.Stop();
             timer1.Enabled = false;
             button1.Enabled = true;
             button3.Enabled = false;
@@ -368,12 +374,8 @@ namespace Graphics_test
             {
                 //Stopwatch sw = new Stopwatch();
                 //sw.Start();
-                e.Graphics.CompositingMode = CompositingMode.SourceOver;
-                e.Graphics.PixelOffsetMode = PixelOffsetMode.HighSpeed;
-                e.Graphics.CompositingQuality = CompositingQuality.HighSpeed;
-                e.Graphics.InterpolationMode = InterpolationMode.NearestNeighbor;
-                e.Graphics.SmoothingMode = SmoothingMode.None;
-                TestDraw(bmp);
+                //TestDraw(bmp);
+                ProcessUsingLockbitsAndUnsafe(myBitmap);
                 e.Graphics.DrawImage(myBitmap, panel1.Location.X, panel1.Location.Y, width, height);
                 //sw.Stop();
                 //MessageBox.Show(sw.Elapsed.TotalMilliseconds.ToString());
