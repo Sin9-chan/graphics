@@ -19,4 +19,19 @@ namespace Graphics_test
             Application.Run(new Form1());
         }
     }
+    public class DoubleBufferPanel : Panel
+
+    {
+        public DoubleBufferPanel()
+
+        {
+            this.DoubleBuffered = true;
+            this.SetStyle(ControlStyles.AllPaintingInWmPaint |
+            ControlStyles.UserPaint |
+            ControlStyles.OptimizedDoubleBuffer, true);
+            this.UpdateStyles();
+
+        }
+
+    }
 }

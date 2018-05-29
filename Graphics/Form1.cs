@@ -24,7 +24,7 @@ namespace Graphics_test
         public volatile bool stop = false;
         public Bitmap myBitmap = null;
         public Graphics graphicsObj = null;
-        public int length = 128;
+        public int length = 256;
         public volatile int[][] bmp = null;
         public int width, height;
 
@@ -39,10 +39,11 @@ namespace Graphics_test
             length = sp1.BytesToRead;
             byte[] buf = new byte[length];
             sp1.Read(buf, 0, length);
-            indata = new int[length];
-            for (int i = 0; i < length; i++)
+            indata = new int[length*2];
+            for (int i = 0; i < length*2; i+=2)
             {
-                indata[i] = (int)buf[i]/16;
+                indata[i] = (int)buf[i / 2] / 16;
+                indata[i+1] = (int)buf[i/2] / 16;
             }
         }
         private void TestDraw(int[][] b)
@@ -131,6 +132,7 @@ namespace Graphics_test
             button1.Enabled = true;
             width = panel1.Width;
             height = length;
+            this.DoubleBuffered = true;
             this.SetStyle(ControlStyles.DoubleBuffer |
               ControlStyles.UserPaint |
               ControlStyles.AllPaintingInWmPaint,
@@ -309,7 +311,7 @@ namespace Graphics_test
                     int g = -1;
                     try
                     {
-                        g = Convert.ToInt32(textBox1.Text);
+                        g = Convert.ToInt32(textBox2.Text);
                     }
                     catch { }
                     if (!((g == -1) || (g > 1000 || g < 90)))
@@ -332,7 +334,7 @@ namespace Graphics_test
                 int g = -1;
                     try
                     {
-                        g = Convert.ToInt32(textBox1.Text);
+                        g = Convert.ToInt32(textBox3.Text);
                     }
                     catch { }
                     if (!((g == -1) || (g > 1000 || g < 10)))
