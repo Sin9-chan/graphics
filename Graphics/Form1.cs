@@ -24,7 +24,7 @@ namespace Graphics_test
         public volatile bool stop = false;
         public Bitmap myBitmap = null;
         public Graphics graphicsObj = null;
-        public int length = 256;
+        public int length = 0;
         public volatile int[][] bmp = null;
         public int width, height;
 
@@ -42,8 +42,8 @@ namespace Graphics_test
             indata = new int[length*2];
             for (int i = 0; i < length*2; i+=2)
             {
-                indata[i] = (int)buf[i / 2] / 16;
-                indata[i+1] = (int)buf[i/2] / 16;
+                indata[i] = buf[i / 2];
+                indata[i + 1] = buf[i / 2];
             }
         }
         private void TestDraw(int[][] b)
@@ -75,8 +75,8 @@ namespace Graphics_test
             button2.Enabled = true;
             textBox3.Enabled = false;
             button8.Enabled = false;
-            try
-            {
+            //try
+            //{
                 bmp = new int[width][];
                 for (int i = 0; i < width; i++)
                 {
@@ -88,22 +88,27 @@ namespace Graphics_test
                 }
                 myBitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
                 graphicsObj = Graphics.FromImage(myBitmap);
-                timer1.Enabled = true;
-                timer1.Start();
-                /*if (sp.IsOpen)
+                //timer1.Enabled = true;
+                //timer1.Start();
+                if (sp.IsOpen)
                 {
-                    do
-                    {
+                    //do
+                    //{
                         sp.Write("MEAS\r");
-                        Thread.Sleep(timer1.Interval);
-                    }
-                    while (!stop);
-                }*/
-            }
-            catch(Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+                        sp.Write("MEAS\r");
+                        string str = "";
+                        for (int i = 0; i < indata.Length; i++)
+                            str += indata[i].ToString() + " ";
+                        MessageBox.Show(str);
+                        //Thread.Sleep(timer1.Interval);
+                   // }
+                    //while (!stop);
+                }
+           // }
+            //catch(Exception ex)
+            //{
+               // MessageBox.Show(ex.Message);
+           // }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -131,7 +136,7 @@ namespace Graphics_test
             }
             button1.Enabled = true;
             width = panel1.Width;
-            height = length;
+            height = panel1.Height;
             this.DoubleBuffered = true;
             this.SetStyle(ControlStyles.DoubleBuffer |
               ControlStyles.UserPaint |
@@ -174,7 +179,7 @@ namespace Graphics_test
         {
             try
             {
-                sp = new SerialPort(portname);
+                sp = new SerialPort(portname, 2000000);
                 sp.Open();
                 sp.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
                 button4.Enabled = true;
