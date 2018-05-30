@@ -24,9 +24,10 @@ namespace Graphics_test
         public volatile bool stop = false;
         public Bitmap myBitmap = null;
         public Graphics graphicsObj = null;
-        public int length = 0;
+        public int length = 256;
         public volatile int[][] bmp = null;
         public int width, height;
+        public bool received = false;
 
         public Form1()
         {
@@ -39,12 +40,13 @@ namespace Graphics_test
             length = sp1.BytesToRead;
             byte[] buf = new byte[length];
             sp1.Read(buf, 0, length);
-            indata = new int[length*2];
-            for (int i = 0; i < length*2; i+=2)
+            indata = new int[length];
+            for (int i = 0; i < length; i+=2)
             {
-                indata[i] = buf[i / 2];
-                indata[i + 1] = buf[i / 2];
+                indata[i] = (buf[i] | buf[i + 1] << 8);
+                indata[i + 1] = (buf[i] | buf[i + 1] << 8);
             }
+            received = true;
         }
         private void TestDraw(int[][] b)
         {
@@ -75,8 +77,8 @@ namespace Graphics_test
             button2.Enabled = true;
             textBox3.Enabled = false;
             button8.Enabled = false;
-            //try
-            //{
+            try
+            {
                 bmp = new int[width][];
                 for (int i = 0; i < width; i++)
                 {
@@ -95,20 +97,20 @@ namespace Graphics_test
                     //do
                     //{
                         sp.Write("MEAS\r");
-                        sp.Write("MEAS\r");
                         string str = "";
                         for (int i = 0; i < indata.Length; i++)
                             str += indata[i].ToString() + " ";
+                        str += indata.Length.ToString();
                         MessageBox.Show(str);
                         //Thread.Sleep(timer1.Interval);
                    // }
                     //while (!stop);
                 }
-           // }
-            //catch(Exception ex)
-            //{
-               // MessageBox.Show(ex.Message);
-           // }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -134,7 +136,6 @@ namespace Graphics_test
                 textBox3.Enabled = false;
                 button8.Enabled = false;
             }
-            button1.Enabled = true;
             width = panel1.Width;
             height = panel1.Height;
             this.DoubleBuffered = true;
@@ -357,21 +358,24 @@ namespace Graphics_test
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            Random r = new Random();
-            indata = new int[bmp[0].Length];
-            for (int i = 0; i < length; i++)
+            //Random r = new Random();
+            //indata = new int[bmp[0].Length];
+            //for (int i = 0; i < length; i++)
+            //{
+            //    indata[i] = r.Next(255);
+            //}
+            if (received)
             {
-                indata[i] = r.Next(255);
+                int[][] demo = new int[bmp.Length][];
+                if (!((indata == null) || (indata.Length == 0)))
+                {
+                    Array.Copy(bmp, 0, demo, 1, bmp.Length - 1);
+                    demo[0] = indata;
+                    bmp = demo;
+                }
+                this.Invalidate();
+                received = false;
             }
-
-            int[][] demo = new int[bmp.Length][];
-            if (!((indata == null) || (indata.Length == 0)))
-            {
-                Array.Copy(bmp, 0, demo, 1, bmp.Length - 1);
-                demo[0] = indata;
-                bmp = demo;
-            }
-            this.Invalidate();
         }
 
         private void Form1_Paint(object sender, PaintEventArgs e)
