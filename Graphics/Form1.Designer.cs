@@ -37,7 +37,6 @@
             this.button4 = new System.Windows.Forms.Button();
             this.button5 = new System.Windows.Forms.Button();
             this.textBox2 = new System.Windows.Forms.TextBox();
-            this.panel1 = new Graphics_test.DoubleBufferPanel();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.button6 = new System.Windows.Forms.Button();
@@ -46,6 +45,7 @@
             this.label3 = new System.Windows.Forms.Label();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.panel1 = new Graphics_test.DoubleBufferPanel();
             this.SuspendLayout();
             // 
             // button1
@@ -127,15 +127,6 @@
             this.textBox2.Size = new System.Drawing.Size(89, 20);
             this.textBox2.TabIndex = 9;
             // 
-            // panel1
-            // 
-            this.panel1.BackColor = System.Drawing.Color.Transparent;
-            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel1.Location = new System.Drawing.Point(74, 61);
-            this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(500, 256);
-            this.panel1.TabIndex = 10;
-            // 
             // label1
             // 
             this.label1.AutoSize = true;
@@ -206,8 +197,17 @@
             // 
             // timer1
             // 
-            this.timer1.Interval = 1;
+            this.timer1.Interval = 10;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
+            // 
+            // panel1
+            // 
+            this.panel1.BackColor = System.Drawing.Color.Transparent;
+            this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
+            this.panel1.Location = new System.Drawing.Point(74, 61);
+            this.panel1.Name = "panel1";
+            this.panel1.Size = new System.Drawing.Size(500, 256);
+            this.panel1.TabIndex = 10;
             // 
             // Form1
             // 

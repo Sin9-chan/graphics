@@ -12,6 +12,7 @@ using System.Threading;
 using System.Diagnostics;
 using System.Drawing.Drawing2D;
 using System.Drawing.Imaging;
+using System.Collections;
 
 namespace Graphics_test
 {
@@ -28,6 +29,7 @@ namespace Graphics_test
         public volatile int[][] bmp = null;
         public int width, height;
         public bool received = false;
+        public ArrayList receivebuf = null;
 
         public Form1()
         {
@@ -37,16 +39,23 @@ namespace Graphics_test
         private void DataReceivedHandler(object sender, SerialDataReceivedEventArgs e)
         {
             SerialPort sp1 = (SerialPort)sender;
-            length = sp1.BytesToRead;
-            byte[] buf = new byte[length];
-            sp1.Read(buf, 0, length);
-            indata = new int[length];
-            for (int i = 0; i < length; i+=2)
+            int len = sp1.BytesToRead;
+            byte[] buf = new byte[len];
+            sp1.Read(buf, 0, len);
+            if (!(receivebuf == null))
             {
-                indata[i] = (buf[i] | buf[i + 1] << 8);
-                indata[i + 1] = (buf[i] | buf[i + 1] << 8);
+                for (int i = 0; i < len - 1; i += 2)
+                {
+                    receivebuf.Add((buf[i] | buf[i + 1] << 8));
+                }
             }
-            received = true;
+            if (receivebuf.Count >= 127)
+                received = true;
+
+            //string str = "";
+            //for (int i = 0; i < receivebuf.Count; i++)
+            //    str += receivebuf[i].ToString() + " ";
+            //MessageBox.Show(receivebuf.Count.ToString() + " bytes " + str);
         }
         private void TestDraw(int[][] b)
         {
@@ -77,8 +86,8 @@ namespace Graphics_test
             button2.Enabled = true;
             textBox3.Enabled = false;
             button8.Enabled = false;
-            try
-            {
+            //try
+           // {
                 bmp = new int[width][];
                 for (int i = 0; i < width; i++)
                 {
@@ -90,27 +99,26 @@ namespace Graphics_test
                 }
                 myBitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
                 graphicsObj = Graphics.FromImage(myBitmap);
-                //timer1.Enabled = true;
-                //timer1.Start();
+                
                 if (sp.IsOpen)
                 {
-                    //do
-                    //{
-                        sp.Write("MEAS\r");
-                        string str = "";
-                        for (int i = 0; i < indata.Length; i++)
-                            str += indata[i].ToString() + " ";
-                        str += indata.Length.ToString();
-                        MessageBox.Show(str);
-                        //Thread.Sleep(timer1.Interval);
-                   // }
-                    //while (!stop);
-                }
+                    timer1.Enabled = true;
+                    timer1.Start();
+                //do
+                //{
+
+                //if (indata==null)
+                //    MessageBox.Show("null");
+                
+                //Thread.Sleep(timer1.Interval);
+                //}
+                //while (!stop);
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show(ex.Message);
-            }
+            //}
+            //catch (Exception ex)
+           // {
+               // MessageBox.Show(ex.Message);
+           // }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -358,14 +366,26 @@ namespace Graphics_test
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            //Random r = new Random();
-            //indata = new int[bmp[0].Length];
-            //for (int i = 0; i < length; i++)
-            //{
-            //    indata[i] = r.Next(255);
-            //}
+            indata = new int[length];
+            receivebuf = new ArrayList();
+            sp.Write("MEAS\r");
+            Application.DoEvents();
             if (received)
             {
+                int j = 0;
+                for (int i = 0; i <= receivebuf.Count; i++, j += 2)
+                {
+                    if (i != receivebuf.Count && j < 256)
+                    {
+                        indata[j] = (int)receivebuf[i];
+                        indata[j + 1] = (int)receivebuf[i];
+                    }
+                    else
+                    {
+                        for (int q = receivebuf.Count * 2; q < 256; q++)
+                        { indata[q] = 0; }
+                    }
+                }
                 int[][] demo = new int[bmp.Length][];
                 if (!((indata == null) || (indata.Length == 0)))
                 {
@@ -374,7 +394,6 @@ namespace Graphics_test
                     bmp = demo;
                 }
                 this.Invalidate();
-                received = false;
             }
         }
 
@@ -386,6 +405,7 @@ namespace Graphics_test
                 //Stopwatch sw = new Stopwatch();
                 //sw.Start();
                 //TestDraw(bmp);
+                received = false;
                 ProcessUsingLockbitsAndUnsafe(myBitmap);
                 e.Graphics.DrawImage(myBitmap, panel1.Location.X, panel1.Location.Y, width, height);
                 //sw.Stop();
