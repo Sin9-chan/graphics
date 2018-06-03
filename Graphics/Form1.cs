@@ -47,10 +47,10 @@ namespace Graphics_test
             {
                 for (int i = 0; i < len - 1; i += 2)
                 {
-                    receivebuf.Add((buf[i] | ((buf[i + 1] & 15) << 8))/16);
-                    receivebuf.Add((buf[i] | ((buf[i + 1] & 15) << 8))/16);
-                    //receivebuf.Add(Math.Abs(256 - (buf[i] | ((buf[i + 1] & 15) << 8)) / 16));
-                    //receivebuf.Add(Math.Abs(256 - (buf[i] | ((buf[i + 1] & 15) << 8)) / 16));
+                    //receivebuf.Add((buf[i] | ((buf[i + 1] & 15) << 8))/16);
+                    //receivebuf.Add((buf[i] | ((buf[i + 1] & 15) << 8))/16);
+                    receivebuf.Add(Math.Abs(256 - (buf[i] | ((buf[i + 1] & 15) << 8)) / 16));
+                    receivebuf.Add(Math.Abs(256 - (buf[i] | ((buf[i + 1] & 15) << 8)) / 16));
                 }
             }
             if (receivebuf.Count >= 256)
@@ -382,21 +382,21 @@ namespace Graphics_test
                     demo[0] = indata;
                     bmp = demo;
                 }
-                if (bmp[128][length - 1] != -1)
-                {
-                    string[] lines = new string[128];
-                    string str = "";
-                    for (int j = 0; j < 128; j++)
-                    {
-                        for (int i = 0; i < length; i++)
-                            str += indata[i].ToString() + " ";
-                        str += "\n";
-                        lines[j] = str;
-                    }
-                    System.IO.File.WriteAllLines(@"D:\test.txt", lines);
-                    MessageBox.Show("i wrote file");
-                    timer1.Stop();
-                }
+                //if (bmp[128][length - 1] != -1)
+                //{
+                //    string[] lines = new string[128];
+                //    string str = "";
+                //    for (int j = 0; j < 128; j++)
+                //    {
+                //        for (int i = 0; i < length; i++)
+                //            str += indata[i].ToString() + " ";
+                //        str += "\n";
+                //        lines[j] = str;
+                //    }
+                //    System.IO.File.WriteAllLines(@"D:\test.txt", lines);
+                //    MessageBox.Show("i wrote file");
+                //    timer1.Stop();
+                //}
                 this.Invalidate();
             }
         }
