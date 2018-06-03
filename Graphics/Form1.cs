@@ -29,7 +29,8 @@ namespace Graphics_test
         public volatile int[][] bmp = null;
         public int width, height;
         public bool received = false;
-        public ArrayList receivebuf = null;
+        public List<int> receivebuf = null;
+        public int cnt = 0;
 
         public Form1()
         {
@@ -46,16 +47,23 @@ namespace Graphics_test
             {
                 for (int i = 0; i < len - 1; i += 2)
                 {
-                    receivebuf.Add((buf[i] | buf[i + 1] << 8));
+                    receivebuf.Add((buf[i] | ((buf[i + 1] & 15) << 8))/16);
+                    receivebuf.Add((buf[i] | ((buf[i + 1] & 15) << 8))/16);
+                    //receivebuf.Add(Math.Abs(256 - (buf[i] | ((buf[i + 1] & 15) << 8)) / 16));
+                    //receivebuf.Add(Math.Abs(256 - (buf[i] | ((buf[i + 1] & 15) << 8)) / 16));
                 }
             }
-            if (receivebuf.Count >= 127)
+            if (receivebuf.Count >= 256)
+            {
                 received = true;
-
-            //string str = "";
-            //for (int i = 0; i < receivebuf.Count; i++)
-            //    str += receivebuf[i].ToString() + " ";
-            //MessageBox.Show(receivebuf.Count.ToString() + " bytes " + str);
+                indata = new int[length];
+                receivebuf.CopyTo(0, indata, 0, length);
+                //string str = "";
+                //for (int i = 0; i < length; i++)
+                //    str += indata[i].ToString() + " ";
+                //MessageBox.Show(str);
+                receivebuf = new List<int>();
+            }
         }
         private void TestDraw(int[][] b)
         {
@@ -86,8 +94,8 @@ namespace Graphics_test
             button2.Enabled = true;
             textBox3.Enabled = false;
             button8.Enabled = false;
-            //try
-           // {
+            try
+            {
                 bmp = new int[width][];
                 for (int i = 0; i < width; i++)
                 {
@@ -99,26 +107,17 @@ namespace Graphics_test
                 }
                 myBitmap = new Bitmap(width, height, PixelFormat.Format32bppArgb);
                 graphicsObj = Graphics.FromImage(myBitmap);
-                
+                receivebuf = new List<int>();
                 if (sp.IsOpen)
                 {
                     timer1.Enabled = true;
                     timer1.Start();
-                //do
-                //{
-
-                //if (indata==null)
-                //    MessageBox.Show("null");
-                
-                //Thread.Sleep(timer1.Interval);
-                //}
-                //while (!stop);
+                }
             }
-            //}
-            //catch (Exception ex)
-           // {
-               // MessageBox.Show(ex.Message);
-           // }
+            catch (Exception ex)
+            {
+                MessageBox.Show(ex.Message);
+            }
         }
 
         private void Form1_Load(object sender, EventArgs e)
@@ -188,6 +187,7 @@ namespace Graphics_test
         {
             try
             {
+                receivebuf = new List<int>();
                 sp = new SerialPort(portname, 2000000);
                 sp.Open();
                 sp.DataReceived += new SerialDataReceivedEventHandler(DataReceivedHandler);
@@ -268,6 +268,7 @@ namespace Graphics_test
             button2.Enabled = false;
             textBox3.Enabled = true;
             button8.Enabled = true;
+            receivebuf = new List<int>();
         }
 
         private void button4_Click(object sender, EventArgs e)
@@ -366,32 +367,35 @@ namespace Graphics_test
 
         private void timer1_Tick(object sender, EventArgs e)
         {
-            indata = new int[length];
-            receivebuf = new ArrayList();
             sp.Write("MEAS\r");
             Application.DoEvents();
             if (received)
             {
-                int j = 0;
-                for (int i = 0; i <= receivebuf.Count; i++, j += 2)
-                {
-                    if (i != receivebuf.Count && j < 256)
-                    {
-                        indata[j] = (int)receivebuf[i];
-                        indata[j + 1] = (int)receivebuf[i];
-                    }
-                    else
-                    {
-                        for (int q = receivebuf.Count * 2; q < 256; q++)
-                        { indata[q] = 0; }
-                    }
-                }
+                received = false;
+                
+                //MessageBox.Show(str);
+
                 int[][] demo = new int[bmp.Length][];
                 if (!((indata == null) || (indata.Length == 0)))
                 {
                     Array.Copy(bmp, 0, demo, 1, bmp.Length - 1);
                     demo[0] = indata;
                     bmp = demo;
+                }
+                if (bmp[128][length - 1] != -1)
+                {
+                    string[] lines = new string[128];
+                    string str = "";
+                    for (int j = 0; j < 128; j++)
+                    {
+                        for (int i = 0; i < length; i++)
+                            str += indata[i].ToString() + " ";
+                        str += "\n";
+                        lines[j] = str;
+                    }
+                    System.IO.File.WriteAllLines(@"D:\test.txt", lines);
+                    MessageBox.Show("i wrote file");
+                    timer1.Stop();
                 }
                 this.Invalidate();
             }
@@ -402,14 +406,9 @@ namespace Graphics_test
             
             if (!((bmp == null) || (myBitmap == null) || stop))
             {
-                //Stopwatch sw = new Stopwatch();
-                //sw.Start();
-                //TestDraw(bmp);
-                received = false;
                 ProcessUsingLockbitsAndUnsafe(myBitmap);
                 e.Graphics.DrawImage(myBitmap, panel1.Location.X, panel1.Location.Y, width, height);
-                //sw.Stop();
-                //MessageBox.Show(sw.Elapsed.TotalMilliseconds.ToString());
+                
             }
         }
     }
