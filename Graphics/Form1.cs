@@ -31,6 +31,8 @@ namespace Graphics_test
         public bool received = false;
         public List<int> receivebuf = null;
         public int cnt = 0;
+        public int gain = 900;
+        public int exp = 90;
 
         public Form1()
         {
@@ -151,6 +153,9 @@ namespace Graphics_test
               ControlStyles.AllPaintingInWmPaint,
               true);
             this.UpdateStyles();
+            gainlbl.Text += " " + gain.ToString();
+            frqlbl.Text += " " + timer1.Interval.ToString();
+            explbl.Text += " " + exp.ToString();
         }
         private void ProcessUsingLockbitsAndUnsafe(Bitmap processedBitmap)
         {
@@ -307,6 +312,8 @@ namespace Graphics_test
                     if (!((g == -1) || (g > 1000)))
                     {
                         sp.Write("GAIN " + g.ToString() + "\r");
+                        gain = g;
+                        gainlbl.Text = "Gain: " + gain.ToString();
                     }
                     else { MessageBox.Show("Expects decimal number from 0 to 1000."); }
                 }
@@ -332,6 +339,8 @@ namespace Graphics_test
                     if (!((g == -1) || (g > 1000 || g < 90)))
                     {
                         sp.Write("TACT " + g.ToString() + "\r");
+                        exp = g;
+                        explbl.Text = "Exposure: " + exp.ToString();
                     }
                     else { MessageBox.Show("Expects decimal number from 90 to 1000."); }
                 }
@@ -352,11 +361,12 @@ namespace Graphics_test
                         g = Convert.ToInt32(textBox3.Text);
                     }
                     catch { }
-                    if (!((g == -1) || (g > 1000 || g < 10)))
+                    if (!((g == -1) || (g > 1000 || g < 1)))
                     {
                         timer1.Interval = g;
+                        frqlbl.Text = "Frequency: " + timer1.Interval.ToString();
                     }
-                    else { MessageBox.Show("Expects decimal number from 10 to 1000."); }
+                    else { MessageBox.Show("Expects decimal number from 1 to 1000."); }
                 
             }
             catch (Exception ex)

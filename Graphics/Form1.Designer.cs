@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             this.components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Form1));
             this.button1 = new System.Windows.Forms.Button();
             this.textBox1 = new System.Windows.Forms.TextBox();
             this.comboBox1 = new System.Windows.Forms.ComboBox();
@@ -45,6 +46,9 @@
             this.label3 = new System.Windows.Forms.Label();
             this.textBox3 = new System.Windows.Forms.TextBox();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
+            this.gainlbl = new System.Windows.Forms.Label();
+            this.frqlbl = new System.Windows.Forms.Label();
+            this.explbl = new System.Windows.Forms.Label();
             this.panel1 = new Graphics_test.DoubleBufferPanel();
             this.SuspendLayout();
             // 
@@ -183,9 +187,9 @@
             this.label3.AutoSize = true;
             this.label3.Location = new System.Drawing.Point(512, 8);
             this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(60, 13);
+            this.label3.Size = new System.Drawing.Size(57, 13);
             this.label3.TabIndex = 16;
-            this.label3.Text = "Draw delay";
+            this.label3.Text = "Frequency";
             // 
             // textBox3
             // 
@@ -200,20 +204,50 @@
             this.timer1.Interval = 40;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
             // 
+            // gainlbl
+            // 
+            this.gainlbl.AutoSize = true;
+            this.gainlbl.Location = new System.Drawing.Point(24, 396);
+            this.gainlbl.Name = "gainlbl";
+            this.gainlbl.Size = new System.Drawing.Size(35, 13);
+            this.gainlbl.TabIndex = 18;
+            this.gainlbl.Text = "Gain: ";
+            // 
+            // frqlbl
+            // 
+            this.frqlbl.AutoSize = true;
+            this.frqlbl.Location = new System.Drawing.Point(337, 396);
+            this.frqlbl.Name = "frqlbl";
+            this.frqlbl.Size = new System.Drawing.Size(63, 13);
+            this.frqlbl.TabIndex = 19;
+            this.frqlbl.Text = "Frequency: ";
+            // 
+            // explbl
+            // 
+            this.explbl.AutoSize = true;
+            this.explbl.Location = new System.Drawing.Point(160, 396);
+            this.explbl.Name = "explbl";
+            this.explbl.Size = new System.Drawing.Size(57, 13);
+            this.explbl.TabIndex = 20;
+            this.explbl.Text = "Exposure: ";
+            // 
             // panel1
             // 
             this.panel1.BackColor = System.Drawing.Color.Transparent;
             this.panel1.BorderStyle = System.Windows.Forms.BorderStyle.Fixed3D;
-            this.panel1.Location = new System.Drawing.Point(74, 61);
+            this.panel1.Location = new System.Drawing.Point(12, 61);
             this.panel1.Name = "panel1";
-            this.panel1.Size = new System.Drawing.Size(500, 256);
+            this.panel1.Size = new System.Drawing.Size(634, 256);
             this.panel1.TabIndex = 10;
             // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(658, 405);
+            this.ClientSize = new System.Drawing.Size(658, 429);
+            this.Controls.Add(this.explbl);
+            this.Controls.Add(this.frqlbl);
+            this.Controls.Add(this.gainlbl);
             this.Controls.Add(this.button8);
             this.Controls.Add(this.label3);
             this.Controls.Add(this.textBox3);
@@ -230,8 +264,9 @@
             this.Controls.Add(this.comboBox1);
             this.Controls.Add(this.textBox1);
             this.Controls.Add(this.button1);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "Form1";
-            this.Text = "Form1";
+            this.Text = "Wunderwaffe";
             this.Load += new System.EventHandler(this.Form1_Load);
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.Form1_Paint);
             this.ResumeLayout(false);
@@ -258,6 +293,9 @@
         private System.Windows.Forms.TextBox textBox3;
         private System.Windows.Forms.Timer timer1;
         private DoubleBufferPanel panel1;
+        private System.Windows.Forms.Label gainlbl;
+        private System.Windows.Forms.Label frqlbl;
+        private System.Windows.Forms.Label explbl;
     }
 }
 

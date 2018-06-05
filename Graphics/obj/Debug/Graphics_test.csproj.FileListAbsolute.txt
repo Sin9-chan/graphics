@@ -27,3 +27,8 @@ C:\Users\KPAH\Desktop\ОБЩ ДОСТУп\graphics\Graphics\obj\Debug\Graphics_t
 C:\Users\KPAH\Desktop\ОБЩ ДОСТУп\graphics\Graphics\obj\Debug\Graphics_test.csproj.CoreCompileInputs.cache
 C:\Users\KPAH\Desktop\ОБЩ ДОСТУп\graphics\Graphics\obj\Debug\Graphics_test.exe
 C:\Users\KPAH\Desktop\ОБЩ ДОСТУп\graphics\Graphics\obj\Debug\Graphics_test.pdb
+E:\Docs\Graphics\Graphics\bin\Debug\Graphics_test.exe.manifest
+E:\Docs\Graphics\Graphics\bin\Debug\Graphics_test.application
+E:\Docs\Graphics\Graphics\obj\Debug\Graphics_test.TrustInfo.xml
+E:\Docs\Graphics\Graphics\obj\Debug\Graphics_test.exe.manifest
+E:\Docs\Graphics\Graphics\obj\Debug\Graphics_test.application
