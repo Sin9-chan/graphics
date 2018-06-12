@@ -33,6 +33,7 @@ namespace Graphics_test
         public int cnt = 0;
         public int gain = 900;
         public int exp = 90;
+        int idx = -1;
 
         public Form1()
         {
@@ -45,26 +46,33 @@ namespace Graphics_test
             int len = sp1.BytesToRead;
             byte[] buf = new byte[len];
             sp1.Read(buf, 0, len);
-            if (!(receivebuf == null))
+            for (int i = 0; i < len; i ++)
             {
-                for (int i = 0; i < len - 1; i += 2)
-                {
-                    //receivebuf.Add((buf[i] | ((buf[i + 1] & 15) << 8))/16);
-                    //receivebuf.Add((buf[i] | ((buf[i + 1] & 15) << 8))/16);
-                    receivebuf.Add(Math.Abs(256 - (buf[i] | ((buf[i + 1] & 15) << 8)) / 16));
-                    receivebuf.Add(Math.Abs(256 - (buf[i] | ((buf[i + 1] & 15) << 8)) / 16));
-                }
+                if (buf[i] == 0)
+                    idx = i;
+                receivebuf.Add(buf[i]);
+                //receivebuf.Add(Math.Abs(256 - (buf[i] | ((buf[i + 1] & 15) << 8)) / 16));
+                //receivebuf.Add(Math.Abs(256 - (buf[i] | ((buf[i + 1] & 15) << 8)) / 16));
             }
-            if (receivebuf.Count >= 256)
+            
+            if (receivebuf.Count >= 257)
             {
                 received = true;
                 indata = new int[length];
-                receivebuf.CopyTo(0, indata, 0, length);
+                if (idx == -1)
+                    receivebuf.CopyTo(0, indata, 0, length);
+                else
+                {
+                    receivebuf.CopyTo(idx + 1, indata, 0, 257 - idx - 1);
+                    if (idx != 0)
+                        receivebuf.CopyTo(0, indata, 257 - idx - 1, idx + 1);
+                }
                 //string str = "";
                 //for (int i = 0; i < length; i++)
                 //    str += indata[i].ToString() + " ";
                 //MessageBox.Show(str);
                 receivebuf = new List<int>();
+                idx = -1;
             }
         }
         private void TestDraw(int[][] b)
@@ -392,21 +400,21 @@ namespace Graphics_test
                     demo[0] = indata;
                     bmp = demo;
                 }
-                //if (bmp[128][length - 1] != -1)
-                //{
-                //    string[] lines = new string[128];
-                //    string str = "";
-                //    for (int j = 0; j < 128; j++)
-                //    {
-                //        for (int i = 0; i < length; i++)
-                //            str += indata[i].ToString() + " ";
-                //        str += "\n";
-                //        lines[j] = str;
-                //    }
-                //    System.IO.File.WriteAllLines(@"D:\test.txt", lines);
-                //    MessageBox.Show("i wrote file");
-                //    timer1.Stop();
-                //}
+                if (bmp[128][length - 1] != -1)
+                {
+                    string[] lines = new string[128];
+                    string str = "";
+                    for (int j = 0; j < 128; j++)
+                    {
+                        for (int i = 0; i < length; i++)
+                            str += indata[i].ToString() + " ";
+                        str += "\n";
+                        lines[j] = str;
+                    }
+                    System.IO.File.WriteAllLines(@"D:\test.txt", lines);
+                    MessageBox.Show("i wrote file");
+                    timer1.Stop();
+                }
                 this.Invalidate();
             }
         }

@@ -43,14 +43,14 @@
     </dependentAssembly>
   </dependency>
   <dependency>
-    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Graphics_test.exe" size="760744">
+    <dependentAssembly dependencyType="install" allowDelayedBinding="true" codebase="Graphics_test.exe" size="761288">
       <assemblyIdentity name="Graphics_test" version="1.0.0.0" language="neutral" processorArchitecture="msil" />
       <hash>
         <dsig:Transforms>
           <dsig:Transform Algorithm="urn:schemas-microsoft-com:HashTransforms.Identity" />
         </dsig:Transforms>
         <dsig:DigestMethod Algorithm="http://www.w3.org/2000/09/xmldsig#sha256" />
-        <dsig:DigestValue>z005M/teIYeABx+3kfRV2s995UT5h1UAyTzzCQMmG6s=</dsig:DigestValue>
+        <dsig:DigestValue>Zqo4mgQD2psrt742oAgnIlA1IUSKKRMjzDYflIT9giU=</dsig:DigestValue>
       </hash>
     </dependentAssembly>
   </dependency>

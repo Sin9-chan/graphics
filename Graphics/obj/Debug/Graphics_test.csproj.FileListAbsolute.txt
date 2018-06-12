@@ -32,3 +32,9 @@ E:\Docs\Graphics\Graphics\bin\Debug\Graphics_test.application
 E:\Docs\Graphics\Graphics\obj\Debug\Graphics_test.TrustInfo.xml
 E:\Docs\Graphics\Graphics\obj\Debug\Graphics_test.exe.manifest
 E:\Docs\Graphics\Graphics\obj\Debug\Graphics_test.application
+C:\Users\KPAH\Desktop\ОБЩ ДОСТУп\graphics\Graphics\bin\Debug\Graphics_test.exe.manifest
+C:\Users\KPAH\Desktop\ОБЩ ДОСТУп\graphics\Graphics\bin\Debug\Graphics_test.application
+C:\Users\KPAH\Desktop\ОБЩ ДОСТУп\graphics\Graphics\obj\Debug\Graphics_test.csprojResolveAssemblyReference.cache
+C:\Users\KPAH\Desktop\ОБЩ ДОСТУп\graphics\Graphics\obj\Debug\Graphics_test.TrustInfo.xml
+C:\Users\KPAH\Desktop\ОБЩ ДОСТУп\graphics\Graphics\obj\Debug\Graphics_test.exe.manifest
+C:\Users\KPAH\Desktop\ОБЩ ДОСТУп\graphics\Graphics\obj\Debug\Graphics_test.application
